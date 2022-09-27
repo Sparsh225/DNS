@@ -1,4 +1,4 @@
-ackage DNS;
+package DNS;
 
 import java.util.Scanner;
 
