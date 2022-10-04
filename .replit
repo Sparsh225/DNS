@@ -1,36 +1,21 @@
-compile = "javac -classpath .:target/dependency/* -d . $(find . -type f -name '*.java')"
-run = "java -classpath .:target/dependency/* Main"
-entrypoint = "Main.java"
-hidden = ["**/*.class"]
+compile = ["make", "-s"]
+run = "./main"
+entrypoint = "main.c"
+hidden = ["main", "main-debug", "**/*.o", "**/*.d", ".ccls-cache", "Makefile"]
 
-[packager]
-language = "java"
-
-[packager.features]
-packageSearch = true
-
-[languages.java]
-pattern = "**/*.java"
-
-[languages.java.languageServer]
-start = "jdt-language-server"
-
-[unitTest]
-language = "java"
-
-[nix]
-channel = "stable-22_05"
+[gitHubImport]
+requiredFiles = [".replit", "replit.nix", ".ccls-cache"]
 
 [debugger]
 support = true
 
 [debugger.compile]
-command = "javac -classpath .:/run_dir/junit-4.12.jar:target/dependency/* -g -d . $(find . -type f -name '*.java')"
+command = ["make", "main-debug"]
+noFileArgs = true
 
 [debugger.interactive]
-transport = "localhost:0"
-connectTimeout = 60
-startCommand = "java-debug"
+transport = "stdio"
+startCommand = ["dap-cpp"]
 
 [debugger.interactive.initializeMessage]
 command = "initialize"
@@ -55,5 +40,26 @@ command = "launch"
 type = "request"
 
 [debugger.interactive.launchMessage.arguments]
-classPaths = ["."]
-mainClass = "Main"
+MIMode = "gdb"
+arg = []
+cwd = "."
+environment = []
+externalConsole = false
+logging = {}
+miDebuggerPath = "gdb"
+name = "g++ - Build and debug active file"
+program = "./main-debug"
+request = "launch"
+setupCommands = [
+	{ description = "Enable pretty-printing for gdb", ignoreFailures = true, text = "-enable-pretty-printing" }
+]
+stopAtEntry = false
+type = "cppdbg"
+
+[languages]
+
+[languages.c]
+pattern = "**/*.{c,h}"
+
+[languages.c.languageServer]
+start = "ccls"
